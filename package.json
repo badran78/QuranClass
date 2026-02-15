@@ -1,0 +1,40 @@
+{
+  "name": "quranclass",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "seed:quran": "tsx scripts/seed.ts"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@tanstack/react-query": "^5.66.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "firebase": "^11.3.1",
+    "i18next": "^24.2.2",
+    "lucide-react": "^0.474.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.1",
+    "react-router-dom": "^6.30.0",
+    "recharts": "^2.15.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "dotenv": "^16.4.7",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.5"
+  }
+}

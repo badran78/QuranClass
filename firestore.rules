@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function userRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function classDoc(classId) {
+      return get(/databases/$(database)/documents/classes/$(classId));
+    }
+
+    function isTeacherOfClass(classId) {
+      return isSignedIn() && classDoc(classId).data.teacherId == request.auth.uid;
+    }
+
+    function isStudentInClass(classId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/classes/$(classId)/members/$(request.auth.uid));
+    }
+
+    match /users/{uid} {
+      allow read, update, delete: if isSelf(uid);
+      allow create: if isSelf(uid);
+    }
+
+    match /invitationCodes/{code} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn()
+        && userRole() == 'teacher'
+        && request.resource.data.teacherId == request.auth.uid
+        && request.resource.data.code == code;
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    match /classes/{classId} {
+      allow create: if isSignedIn() && userRole() == 'teacher' && request.resource.data.teacherId == request.auth.uid;
+      allow read: if isTeacherOfClass(classId) || isStudentInClass(classId);
+      allow update, delete: if isTeacherOfClass(classId);
+
+      match /members/{uid} {
+        allow read: if isTeacherOfClass(classId) || isSelf(uid);
+        allow create: if request.resource.data.uid == uid
+          && (isTeacherOfClass(classId) || (isSelf(uid) && request.resource.data.roleInClass == 'student'));
+        allow update, delete: if isTeacherOfClass(classId);
+      }
+
+      match /joinRequests/{requestId} {
+        allow read: if isTeacherOfClass(classId) || (isSignedIn() && resource.data.studentId == request.auth.uid);
+        allow create: if isSignedIn()
+          && userRole() == 'student'
+          && request.resource.data.studentId == request.auth.uid
+          && request.resource.data.status == 'pending';
+        allow update: if isTeacherOfClass(classId);
+      }
+    }
+
+    match /assignments/{assignmentId} {
+      allow create: if isSignedIn()
+        && userRole() == 'teacher'
+        && request.resource.data.teacherId == request.auth.uid
+        && isTeacherOfClass(request.resource.data.classId);
+      allow read: if isSignedIn() && (
+        resource.data.teacherId == request.auth.uid || resource.data.studentId == request.auth.uid || isTeacherOfClass(resource.data.classId)
+      );
+      allow update, delete: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    match /submissions/{submissionId} {
+      allow create: if isSignedIn()
+        && userRole() == 'student'
+        && request.resource.data.studentId == request.auth.uid;
+      allow read: if isSignedIn() && (
+        resource.data.studentId == request.auth.uid || resource.data.teacherId == request.auth.uid
+      );
+      allow update: if isSignedIn() && resource.data.teacherId == request.auth.uid;
+    }
+
+    match /notifications/{notificationId} {
+      allow create: if isSignedIn();
+      allow read, update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /quran/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}

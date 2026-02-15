@@ -1,0 +1,23 @@
+{
+  "appName": "QuranClass",
+  "auth": {
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "name": "الاسم",
+    "role": "الدور",
+    "student": "طالب",
+    "teacher": "معلم"
+  },
+  "nav": {
+    "classes": "الحلقات",
+    "assignments": "الواجبات",
+    "submit": "تسليم",
+    "status": "الحالة",
+    "profile": "الملف",
+    "students": "الطلاب",
+    "review": "المراجعة",
+    "analytics": "الإحصائيات"
+  }
+}

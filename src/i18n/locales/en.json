@@ -1,0 +1,23 @@
+{
+  "appName": "QuranClass",
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Create Account",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "role": "Role",
+    "student": "Student",
+    "teacher": "Teacher"
+  },
+  "nav": {
+    "classes": "Classes",
+    "assignments": "Assignments",
+    "submit": "Submit",
+    "status": "Status",
+    "profile": "Profile",
+    "students": "Students",
+    "review": "Review",
+    "analytics": "Analytics"
+  }
+}
