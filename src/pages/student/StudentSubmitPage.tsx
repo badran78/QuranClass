@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStudentAssignments } from '@/hooks/useData';
 import { submitAssignment } from '@/lib/db';
 import { useToast } from '@/components/common/ToastProvider';
+import { surahByNumber } from '@/constants/quran';
 
 const schema = z.object({
   assignmentId: z.string().min(1),
@@ -68,7 +69,8 @@ export function StudentSubmitPage() {
           <option value="">Select assignment</option>
           {assignments.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.type} - Surah {item.quranScope.surahNumber} ({item.quranScope.ayahStart}-{item.quranScope.ayahEnd})
+              {item.type} - {surahByNumber(item.quranScope.surahNumber)?.nameEn} (Ayah {item.quranScope.ayahStart} to{' '}
+              {item.quranScope.ayahEnd})
             </option>
           ))}
         </select>
