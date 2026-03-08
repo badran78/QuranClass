@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/common/EmptyState';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTeacherSubmissions } from '@/hooks/useData';
+import { useTeacherAssignments, useTeacherSubmissions } from '@/hooks/useData';
 import { reviewSubmission } from '@/lib/db';
 import { useToast } from '@/components/common/ToastProvider';
+import { surahByNumber } from '@/constants/quran';
 
 export function TeacherReviewPage() {
   const { authUser } = useAuth();
   const { data: submissions = [] } = useTeacherSubmissions(authUser?.uid);
+  const { data: assignments = [] } = useTeacherAssignments(authUser?.uid);
   const { pushToast } = useToast();
   const [feedbackById, setFeedbackById] = useState<Record<string, string>>({});
   const [filter, setFilter] = useState<'all' | 'submitted' | 'revision_requested' | 'approved'>('submitted');
+
+  const assignmentById = useMemo(() => new Map(assignments.map((item) => [item.id, item])), [assignments]);
 
   const filtered = useMemo(() => {
     if (filter === 'all') return submissions;
@@ -47,6 +51,17 @@ export function TeacherReviewPage() {
       ) : (
         filtered.map((submission) => (
           <article key={submission.id} className="rounded-2xl border border-slate-200 bg-white p-4">
+            {(() => {
+              const assignment = assignmentById.get(submission.assignmentId);
+              const surah = assignment ? surahByNumber(assignment.quranScope.surahNumber) : null;
+              return (
+                <div className="mb-2 rounded-lg bg-slate-50 p-2 text-xs text-slate-600">
+                  {assignment
+                    ? `${surah?.nameEn ?? `Surah ${assignment.quranScope.surahNumber}`} - from ayah ${assignment.quranScope.ayahStart} to ${assignment.quranScope.ayahEnd}`
+                    : 'Assignment details unavailable'}
+                </div>
+              );
+            })()}
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-sm font-semibold">Assignment {submission.assignmentId.slice(0, 6)}</p>

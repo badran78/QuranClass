@@ -6,10 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:web": "npm run build",
     "preview": "vite preview",
-    "seed:quran": "tsx scripts/seed.ts"
+    "seed:quran": "tsx scripts/seed.ts",
+    "cap:sync": "npm run build:web && npx cap sync",
+    "cap:ios": "npm run build:web && (test -d ios || npx cap add ios) && npx cap sync ios && npx cap open ios"
   },
   "dependencies": {
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "@headlessui/react": "^2.2.0",
     "@tanstack/react-query": "^5.66.0",
     "clsx": "^2.1.1",

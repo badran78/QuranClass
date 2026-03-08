@@ -12,7 +12,6 @@ export function StudentAssignmentsPage() {
   const { data: submissions = [] } = useStudentSubmissions(authUser?.uid);
 
   const grouped = useMemo(() => {
-    const classMap = new Map(classes.map((item) => [item.id, item]));
     return assignments.reduce<Record<string, typeof assignments>>((acc, assignment) => {
       const key = assignment.classId;
       if (!acc[key]) acc[key] = [];
@@ -51,7 +50,8 @@ export function StudentAssignmentsPage() {
                       <div>
                         <p className="text-sm font-medium capitalize">{assignment.type}</p>
                         <p className="text-xs text-slate-500">
-                          {surah?.nameEn} {assignment.quranScope.ayahStart}-{assignment.quranScope.ayahEnd}
+                          {surah?.nameEn} ({surah?.nameAr}) - from ayah {assignment.quranScope.ayahStart} to{' '}
+                          {assignment.quranScope.ayahEnd}
                         </p>
                         <p className="text-xs text-slate-500">Due: {formatDate(assignment.dueDate)}</p>
                       </div>
@@ -59,6 +59,9 @@ export function StudentAssignmentsPage() {
                         {latestSubmissionByAssignment.get(assignment.id) || 'pending'}
                       </span>
                     </div>
+                    {assignment.amount?.notes ? (
+                      <p className="mt-2 text-xs text-slate-600">Teacher notes: {assignment.amount.notes}</p>
+                    ) : null}
                     <div className="mt-2 border-t border-slate-100 pt-2 text-xs text-slate-500">
                       <p>Submission timeline:</p>
                       {submissions

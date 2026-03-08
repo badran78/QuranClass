@@ -4,6 +4,8 @@ export type UserRole = 'student' | 'teacher';
 export type AssignmentType = 'memorization' | 'wird' | 'both';
 export type SubmissionStatus = 'submitted' | 'approved' | 'revision_requested';
 export type JoinRequestStatus = 'pending' | 'accepted' | 'rejected';
+export type StudentLevel = 'beginner' | 'intermediate' | 'advanced';
+export type StudentAgeGroup = 'kids' | 'teens' | 'adults';
 
 export interface AppUser {
   uid: string;
@@ -29,6 +31,8 @@ export interface ClassMember {
   status: 'active';
   joinedAt?: Timestamp;
   displayName?: string;
+  level?: StudentLevel;
+  ageGroup?: StudentAgeGroup;
 }
 
 export interface JoinRequest {
@@ -82,7 +86,7 @@ export interface Submission {
 export interface NotificationItem {
   id: string;
   userId: string;
-  type: 'join_request' | 'join_request_decision' | 'new_assignment' | 'submission_reviewed';
+  type: 'join_request' | 'join_request_decision' | 'new_assignment' | 'submission_reviewed' | 'assignment_completed';
   title: string;
   body: string;
   classId?: string;

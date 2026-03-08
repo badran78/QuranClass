@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   collectionGroup,
+  deleteField,
   deleteDoc,
   doc,
   getDoc,
@@ -22,15 +23,18 @@ import {
   AppUser,
   Assignment,
   AssignmentType,
+  StudentAgeGroup,
   ClassMember,
   JoinRequest,
   NotificationItem,
   SchoolClass,
+  StudentLevel,
   Submission,
   SubmissionStatus,
   UserRole
 } from '@/types';
 import { randomInvitationCode } from '@/lib/utils';
+import { surahByNumber } from '@/constants/quran';
 
 export async function createUserProfile(data: {
   uid: string;
@@ -217,6 +221,19 @@ export async function submitAssignment(input: {
     feedback: '',
     createdAt: serverTimestamp()
   });
+
+  const assignmentSnap = await getDoc(doc(db, 'assignments', input.assignmentId));
+  if (!assignmentSnap.exists()) return;
+
+  const assignment = assignmentSnap.data() as Omit<Assignment, 'id'>;
+  const surah = surahByNumber(assignment.quranScope.surahNumber);
+  await createNotification({
+    userId: input.teacherId,
+    type: 'assignment_completed',
+    title: 'Student submitted homework',
+    body: `${surah?.nameEn ?? `Surah ${assignment.quranScope.surahNumber}`}, Ayah ${assignment.quranScope.ayahStart}-${assignment.quranScope.ayahEnd}`,
+    classId: input.classId
+  });
 }
 
 export async function reviewSubmission(submissionId: string, status: Exclude<SubmissionStatus, 'submitted'>, feedback?: string) {
@@ -254,6 +271,18 @@ export async function createNotification(input: {
   await addDoc(collection(db, 'notifications'), {
     ...input,
     createdAt: serverTimestamp()
+  });
+}
+
+export async function updateClassMemberDetails(
+  classId: string,
+  studentId: string,
+  input: { level?: StudentLevel; ageGroup?: StudentAgeGroup }
+) {
+  const memberRef = doc(db, `classes/${classId}/members/${studentId}`);
+  await updateDoc(memberRef, {
+    level: input.level ?? deleteField(),
+    ageGroup: input.ageGroup ?? deleteField()
   });
 }
 

@@ -20,16 +20,19 @@ QuranClass is a production-ready, mobile-first web app for small private Quran s
   - Create/manage multiple classes
   - Unique invitation code per class
   - Real-time join request queue (accept/reject)
+  - Organize students by level (`beginner`, `intermediate`, `advanced`) and age group (`kids`, `teens`, `adults`)
   - Create student-specific assignments (`memorization`, `wird`, `both`) with structured Surah/Ayah range
   - Review student submissions (approve/revision requested) with feedback
   - Teacher analytics per class and per student
 - Student flows:
   - Join class by invitation code (request workflow)
   - View assignments grouped by class
+  - View detailed homework ranges with Surah name and Ayah start/end
   - Quick submit completion with notes
   - Submission timeline + status updates
-  - Personal analytics only
+  - Personal analytics including memorized ayahs, remaining ayahs, and completion %
 - In-app real-time notification center
+- Teacher receives notifications when students submit assignment completion
 - Mobile-first bottom tab navigation with role-based tabs
 - i18n + persisted language preference (`en` / `ar`) and RTL support
 
@@ -53,7 +56,7 @@ QuranClass is a production-ready, mobile-first web app for small private Quran s
 - `classes/{classId}`
   - `teacherId`, `name`, `description`, `invitationCode`, `createdAt`
 - `classes/{classId}/members/{uid}`
-  - `uid`, `roleInClass`, `status`, `displayName`, `joinedAt`
+  - `uid`, `roleInClass`, `status`, `displayName`, `joinedAt`, `level?`, `ageGroup?`
 - `classes/{classId}/joinRequests/{requestId}`
   - `teacherId`, `studentId`, `studentName`, `status`, `createdAt`, `decidedAt`
 - `assignments/{assignmentId}` (top-level)
@@ -62,6 +65,7 @@ QuranClass is a production-ready, mobile-first web app for small private Quran s
   - `assignmentId`, `classId`, `studentId`, `teacherId`, `content`, `notes`, `status`, `feedback`, `createdAt`, `decidedAt`
 - `notifications/{notificationId}`
   - `userId`, `type`, `title`, `body`, `classId`, `createdAt`, `readAt`
+  - `type` includes `join_request`, `join_request_decision`, `new_assignment`, `submission_reviewed`, `assignment_completed`
 - `quran/meta` (optional seed)
   - `surahs[]`
 
@@ -107,6 +111,36 @@ npm run dev
 npm run build
 npm run preview
 ```
+
+## iPhone + App Store Packaging (Capacitor)
+
+This project includes Capacitor so it can run as a native iOS app and be submitted to the App Store.
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Build web assets and sync Capacitor:
+
+```bash
+npm run cap:sync
+```
+
+3. Generate/open iOS project (on macOS with Xcode installed):
+
+```bash
+npm run cap:ios
+```
+
+4. In Xcode:
+   - Set signing team + bundle identifier.
+   - Add app icons and launch screen.
+   - Configure version/build number.
+   - Archive and submit with Organizer to App Store Connect.
+
+Capacitor configuration is in `capacitor.config.ts`.
 
 ## Firebase Project Setup
 
